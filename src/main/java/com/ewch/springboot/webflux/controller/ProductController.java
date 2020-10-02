@@ -50,4 +50,20 @@ public class ProductController {
 		model.addAttribute("title", "products list");
 		return "productList";
 	}
+
+	@GetMapping("/products-full")
+	public String getProductsFull(Model model) {
+		Flux<Product> productFlux = productDao.findAll()
+			.map(product -> {
+				product.setName(product.getName().toUpperCase());
+				return product;
+			})
+			.repeat(5000);
+		productFlux.subscribe(product -> LOGGER.info(product.getName()));
+
+		model.addAttribute("products", new ReactiveDataDriverContextVariable(productFlux, 1));
+		model.addAttribute("title", "products list");
+		return "productList";
+	}
+
 }
