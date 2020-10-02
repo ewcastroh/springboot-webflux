@@ -32,7 +32,7 @@ public class ProductController {
 		productFlux.subscribe(product -> LOGGER.info(product.getName()));
 
 		model.addAttribute("products", productFlux);
-		model.addAttribute("title", "products list");
+		model.addAttribute("title", "Products list");
 		return "productList";
 	}
 
@@ -47,7 +47,7 @@ public class ProductController {
 		productFlux.subscribe(product -> LOGGER.info(product.getName()));
 
 		model.addAttribute("products", new ReactiveDataDriverContextVariable(productFlux, 1));
-		model.addAttribute("title", "products list");
+		model.addAttribute("title", "Products list");
 		return "productList";
 	}
 
@@ -59,11 +59,24 @@ public class ProductController {
 				return product;
 			})
 			.repeat(5000);
-		productFlux.subscribe(product -> LOGGER.info(product.getName()));
 
-		model.addAttribute("products", new ReactiveDataDriverContextVariable(productFlux, 1));
-		model.addAttribute("title", "products list");
+		model.addAttribute("products", productFlux);
+		model.addAttribute("title", "Products list");
 		return "productList";
+	}
+
+	@GetMapping("/products-chunked")
+	public String getProductsChunked(Model model) {
+		Flux<Product> productFlux = productDao.findAll()
+			.map(product -> {
+				product.setName(product.getName().toUpperCase());
+				return product;
+			})
+			.repeat(5000);
+
+		model.addAttribute("products", productFlux);
+		model.addAttribute("title", "Products list");
+		return "productList-chunked";
 	}
 
 }
