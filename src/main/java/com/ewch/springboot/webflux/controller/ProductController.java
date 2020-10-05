@@ -1,5 +1,6 @@
 package com.ewch.springboot.webflux.controller;
 
+import com.ewch.springboot.webflux.model.document.Category;
 import com.ewch.springboot.webflux.model.document.Product;
 import com.ewch.springboot.webflux.service.ProductService;
 import java.time.Duration;
@@ -10,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -145,6 +145,11 @@ public class ProductController {
 		model.addAttribute("products", productFlux);
 		model.addAttribute("title", "Products list");
 		return Mono.just("productList-chunked");
+	}
+
+	@ModelAttribute("categories")
+	public Flux<Category> getCategories() {
+		return productService.findAllCategories();
 	}
 
 }

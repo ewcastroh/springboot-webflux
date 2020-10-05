@@ -49,7 +49,7 @@ public class SpringbootWebfluxApplication implements CommandLineRunner {
 				new Product("Sony Camara HD Digital", 177.89, electronic),
 				new Product("Apple iPod", 46.89, electronic),
 				new Product("Sony Notebook", 846.89, computation),
-				new Product("Hewlett Packard Multifuncional", 200.89),
+				new Product("Hewlett Packard Multifuncional", 200.89, computation),
 				new Product("Bianchi Bicycle", 70.89, sport),
 				new Product("HP Notebook Omen 17", 2500.89, computation),
 				new Product("Mica 5 Drawers", 150.89, furniture),
