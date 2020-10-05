@@ -46,7 +46,7 @@ public class ProductController {
 			.doOnNext(product1 -> {
 				LOGGER.info("Saved product: " + product.toString());
 			})
-			.thenReturn("redirect:/productList");
+			.thenReturn("redirect:/products");
 			//.then(Mono.just("redirect:/productList"));
 	}
 
