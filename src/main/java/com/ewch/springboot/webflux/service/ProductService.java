@@ -1,5 +1,6 @@
 package com.ewch.springboot.webflux.service;
 
+import com.ewch.springboot.webflux.model.document.Category;
 import com.ewch.springboot.webflux.model.document.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,4 +18,10 @@ public interface ProductService {
 	Mono<Product> save(Product product);
 
 	Mono<Void> delete(Product product);
+
+	Flux<Category> findAllCategories();
+
+	Mono<Category> findCategoryById(String id);
+
+	Mono<Category> saveCategory(Category category);
 }

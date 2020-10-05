@@ -22,12 +22,19 @@ public class Product {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createdAt;
 
+	private Category category;
+
 	public Product() {
 	}
 
 	public Product(String name, Double price) {
 		this.name = name;
 		this.price = price;
+	}
+
+	public Product(String name, Double price, Category category) {
+		this(name, price);
+		this.category = category;
 	}
 
 	public String getId() {
@@ -60,5 +67,13 @@ public class Product {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 }

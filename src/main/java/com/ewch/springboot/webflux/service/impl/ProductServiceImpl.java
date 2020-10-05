@@ -1,7 +1,9 @@
 package com.ewch.springboot.webflux.service.impl;
 
 import com.ewch.springboot.webflux.controller.ProductController;
+import com.ewch.springboot.webflux.dao.CategoryDao;
 import com.ewch.springboot.webflux.dao.ProductDao;
+import com.ewch.springboot.webflux.model.document.Category;
 import com.ewch.springboot.webflux.model.document.Product;
 import com.ewch.springboot.webflux.service.ProductService;
 import org.slf4j.Logger;
@@ -16,9 +18,11 @@ public class ProductServiceImpl implements ProductService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
 	private final ProductDao productDao;
+	private final CategoryDao categoryDao;
 
-	public ProductServiceImpl(ProductDao productDao) {
+	public ProductServiceImpl(ProductDao productDao, CategoryDao categoryDao) {
 		this.productDao = productDao;
+		this.categoryDao = categoryDao;
 	}
 
 	@Override
@@ -53,5 +57,20 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Mono<Void> delete(Product product) {
 		return productDao.delete(product);
+	}
+
+	@Override
+	public Flux<Category> findAllCategories() {
+		return categoryDao.findAll();
+	}
+
+	@Override
+	public Mono<Category> findCategoryById(String id) {
+		return categoryDao.findById(id);
+	}
+
+	@Override
+	public Mono<Category> saveCategory(Category category) {
+		return categoryDao.save(category);
 	}
 }
