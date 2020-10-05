@@ -30,8 +30,8 @@
         <option value="">-- Select category --</option>
         <option th:each="category: ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
       </select>
-      <small th:if="${#fields.hasErrors('category.id')}" th:errors="*{category.id}"></small>
     </div>
+    <small th:if="${#fields.hasErrors('category.id')}" th:errors="*{category.id}"></small>
   </div>
   <div>
     <div><input type="submit" th:value="${button}"></div>

@@ -1,6 +1,7 @@
 package com.ewch.springboot.webflux.model.document;
 
 import java.util.Date;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
@@ -22,6 +23,7 @@ public class Product {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createdAt;
 
+	@Valid
 	private Category category;
 
 	public Product() {
@@ -75,5 +77,16 @@ public class Product {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	@Override
+	public String toString() {
+		return "Product{" +
+			"id='" + id + '\'' +
+			", name='" + name + '\'' +
+			", price=" + price +
+			", createdAt=" + createdAt +
+			", category=" + category +
+			'}';
 	}
 }
