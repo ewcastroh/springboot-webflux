@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,6 +101,24 @@ public class ProductController {
 				.thenReturn("redirect:/products?success=product+saved+successfully");
 			//.then(Mono.just("redirect:/productList"));
 		}
+	}
+
+	@GetMapping("/delete/{id}")
+	public Mono<String> deleteProduct(@PathVariable String id) {
+		return productService.findById(id)
+			.defaultIfEmpty(new Product())
+			.flatMap(product -> {
+				if (product.getId() == null) {
+					return Mono.error(new InterruptedException("Product doesn't exist!"));
+				}
+				return Mono.just(product);
+			})
+			.flatMap(product -> {
+				LOGGER.info("Product deleted: " + product.toString());
+				return productService.delete(product);
+			})
+			.then(Mono.just("redirect:/products?success=product+deleted+successfully"))
+			.onErrorResume(throwable -> Mono.just("redirect:/products?error=product+doesnt+exist+to+be+deleted"));
 	}
 
 	@GetMapping("/products-datadriver")
