@@ -26,6 +26,8 @@ public class Product {
 	@Valid
 	private Category category;
 
+	private String picture;
+
 	public Product() {
 	}
 
@@ -77,6 +79,14 @@ public class Product {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
 	}
 
 	@Override

@@ -3,11 +3,15 @@ package com.ewch.springboot.webflux.controller;
 import com.ewch.springboot.webflux.model.document.Category;
 import com.ewch.springboot.webflux.model.document.Product;
 import com.ewch.springboot.webflux.service.ProductService;
+import java.io.File;
 import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
@@ -26,6 +31,9 @@ import reactor.core.publisher.Mono;
 public class ProductController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
+
+	@Value("${config.uploads.path}")
+	private String pathUpload;
 
 	private final ProductService productService;
 
@@ -84,7 +92,9 @@ public class ProductController {
 	}
 
 	@PostMapping("/form")
-	public Mono<String> saveProduct(@Valid @ModelAttribute("product") Product product, BindingResult bindingResult, Model model, SessionStatus sessionStatus) {
+	public Mono<String> saveProduct(@Valid @ModelAttribute("product") Product product, BindingResult bindingResult, Model model,
+									@RequestPart(name = "file") FilePart file, SessionStatus sessionStatus) {
+
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("title", "Errors in Product form");
 			model.addAttribute("button", "Save");
@@ -96,11 +106,25 @@ public class ProductController {
 				if (product.getCreatedAt() == null) {
 					product.setCreatedAt(new Date());
 				}
+				if (!file.filename().isEmpty()) {
+					product.setPicture(UUID.randomUUID().toString().concat("-")
+						.concat(file.filename()
+							.replace(" ", "")
+							.replace(":", "")
+							.replace("\\", "")
+						));
+				}
 				product.setCategory(category);
 				return productService.save(product);
 			})
 			.doOnNext(product1 -> {
 				LOGGER.info("Saved product: " + product.toString());
+			})
+			.flatMap(product1 -> {
+				if (!file.filename().isEmpty()) {
+					return file.transferTo(new File(pathUpload.concat(product1.getPicture())));
+				}
+				return Mono.empty();
 			})
 			.thenReturn("redirect:/products?success=product+saved+successfully");
 			//.then(Mono.just("redirect:/productList"));
