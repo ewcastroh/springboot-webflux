@@ -3,11 +3,15 @@ package com.ewch.springboot.webflux.controller;
 import com.ewch.springboot.webflux.model.document.Product;
 import com.ewch.springboot.webflux.service.ProductService;
 import java.time.Duration;
+import java.util.Date;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -79,14 +83,23 @@ public class ProductController {
 	}
 
 	@PostMapping("/form")
-	public Mono<String> saveProduct(Product product, SessionStatus sessionStatus) {
-		sessionStatus.setComplete();
-		return productService.save(product)
-			.doOnNext(product1 -> {
-				LOGGER.info("Saved product: " + product.toString());
-			})
-			.thenReturn("redirect:/products");
+	public Mono<String> saveProduct(@Valid @ModelAttribute("product") Product product, BindingResult bindingResult, Model model, SessionStatus sessionStatus) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("title", "Errors in Product form");
+			model.addAttribute("button", "Save");
+			return Mono.just("form");
+		} else {
+			sessionStatus.setComplete();
+			if (product.getCreatedAt() == null) {
+				product.setCreatedAt(new Date());
+			}
+			return productService.save(product)
+				.doOnNext(product1 -> {
+					LOGGER.info("Saved product: " + product.toString());
+				})
+				.thenReturn("redirect:/products?success=product+saved+successfully");
 			//.then(Mono.just("redirect:/productList"));
+		}
 	}
 
 	@GetMapping("/products-datadriver")
