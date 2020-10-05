@@ -8,7 +8,7 @@
 <h1 th:text="${title}"></h1>
 <a th:href="@{/products}">List products</a>
 <form th:action="@{/form}" method="POST" th:object="${product}">
-  <!--<input th:if="${product.id != null}" type="hidden" th:field="*{id}">-->
+  <input th:if="${product.id != null}" type="hidden" th:field="*{id}">
   <div>
     <label for="name">Name</label>
     <div><input type="text" th:field="*{name}"></div>
@@ -22,7 +22,7 @@
     <div><input type="date" th:field="*{createdAt}"></div>
   </div>
   <div>
-    <div><input type="submit" value="Save"></div>
+    <div><input type="submit" th:value="${button}"></div>
   </div>
 </form>
 </body>

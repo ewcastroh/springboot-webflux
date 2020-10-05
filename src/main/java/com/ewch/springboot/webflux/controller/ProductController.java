@@ -41,7 +41,29 @@ public class ProductController {
 	public Mono<String> createProduct(Model model) {
 		model.addAttribute("product", new Product());
 		model.addAttribute("title", "Product Form");
+		model.addAttribute("button", "Create");
 		return Mono.just("form");
+	}
+
+	@GetMapping("/form-v2/{id}")
+	// public Mono<String> editProduct(@PathVariable(name = "id") String productId) {
+	public Mono<String> editProductV2(@PathVariable String id, Model model) {
+		return productService.findById(id)
+			.doOnNext(product -> {
+				product.toString();
+				model.addAttribute("title", "Edit Product");
+				model.addAttribute("product", product);
+				model.addAttribute("button", "Save");
+			})
+			.defaultIfEmpty(new Product())
+			.flatMap(product -> {
+				if (product.getId() == null) {
+					return Mono.error(new InterruptedException("Product doesn't exist!"));
+				}
+				return Mono.just(product);
+			})
+			.then(Mono.just("form"))
+			.onErrorResume(throwable -> Mono.just("redirect:/products?error=product+doesnt+exist"));
 	}
 
 	@GetMapping("/form/{id}")
@@ -52,6 +74,7 @@ public class ProductController {
 			.defaultIfEmpty(new Product());
 		model.addAttribute("title", "Edit Product");
 		model.addAttribute("product", productMono);
+		model.addAttribute("button", "Save");
 		return Mono.just("form");
 	}
 
