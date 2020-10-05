@@ -180,4 +180,22 @@ public class ProductController {
 		return productService.findAllCategories();
 	}
 
+	@GetMapping("/productDetail/{id}")
+	public Mono<String> showImage(Model model, @PathVariable("id") String id) {
+		return productService.findById(id)
+			.doOnNext(product -> {
+				model.addAttribute("product", product);
+				model.addAttribute("title", "Product Detaol");
+			})
+			.switchIfEmpty(Mono.just(new Product()))
+			.flatMap(product -> {
+				if (product.getId() == null) {
+					return Mono.error(new InterruptedException("Product doesn't exist!"));
+				}
+				return Mono.just(product);
+			})
+			.then(Mono.just("productDetail"))
+			.onErrorResume(throwable -> Mono.just("redirect:/products?error=product+doesnt+exist"));
+	}
+
 }
